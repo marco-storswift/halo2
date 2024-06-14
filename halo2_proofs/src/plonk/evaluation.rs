@@ -31,6 +31,7 @@ use std::{
     iter,
     ops::{Index, Mul, MulAssign},
 };
+use std::time::Instant;
 
 use super::{ConstraintSystem, Expression};
 
@@ -321,8 +322,12 @@ impl<C: CurveAffine> Evaluator<C> {
         let p = &pk.vk.cs.permutation;
         let num_parts = domain.extended_len() >> domain.k();
 
+        let start = Instant::now();
+
         // Calculate the quotient polynomial for each part
         let mut current_extended_omega = one;
+        println!("num_parts={} advice_polys.len()={} instance_polys.len()={}",num_parts, advice_polys.len(), instance_polys.len());
+
         let value_parts: Vec<Polynomial<C::ScalarExt, LagrangeCoeff>> = (0..num_parts)
             .map(|_| {
                 let fixed: Vec<Polynomial<C::ScalarExt, LagrangeCoeff>> = pk
@@ -710,7 +715,9 @@ impl<C: CurveAffine> Evaluator<C> {
             })
             .collect();
 
-        domain.extended_from_lagrange_vec(value_parts)
+        let result = domain.extended_from_lagrange_vec(value_parts);
+        println!("evaluate_h {:?}", Instant::now() - start);
+        result
     }
 }
 

@@ -148,6 +148,7 @@ pub fn small_multiexp<C: CurveAffine>(coeffs: &[C::Scalar], bases: &[C]) -> C::C
 /// This will use multithreading if beneficial.
 pub fn best_multiexp<C: CurveAffine>(coeffs: &[C::Scalar], bases: &[C]) -> C::Curve {
     assert_eq!(coeffs.len(), bases.len());
+    println!("msm {}/{}",coeffs.len(),bases.len());
 
     let num_threads = multicore::current_num_threads();
     if coeffs.len() > num_threads {
@@ -191,7 +192,7 @@ pub fn best_fft<Scalar: Field, G: FftGroup<Scalar>>(a: &mut [G], omega: Scalar, 
     let n = a.len() as usize;
     let sub_n = n >> log_split;
     let split_m = 1 << log_split;
-
+    println!("fft {}/{}",sub_n,split_m);
     if sub_n < split_m {
         serial_fft(a, omega, log_n);
     } else {
